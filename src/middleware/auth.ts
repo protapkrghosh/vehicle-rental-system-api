@@ -8,20 +8,24 @@ const auth = (...roles: string[]) => {
          const token = req.headers.authorization;
 
          if (!token) {
-            return res
-               .status(401)
-               .json({ message: "Invalid authentication token" });
+            return res.status(401).json({
+               success: false,
+               message: "Invalid authentication token",
+            });
          }
 
+         const authToken = token.split(" ")[1] || token;
+
          const decoded = jwt.verify(
-            token,
+            authToken,
             config.jwtSecret as string
          ) as JwtPayload;
          req.user = decoded;
 
          if (roles.length && !roles.includes(decoded.role)) {
             return res.status(403).json({
-               error: "Unauthorized!!",
+               success: false,
+               message: "Unauthorized!!",
             });
          }
 
