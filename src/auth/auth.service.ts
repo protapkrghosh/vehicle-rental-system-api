@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { pool } from "../config/database";
 
 const signUpUser = async (payload: Record<string, unknown>) => {
@@ -16,20 +17,31 @@ const signUpUser = async (payload: Record<string, unknown>) => {
 };
 
 const signInUser = async (email: string, password: string) => {
-   const result = await pool.query(`SELECT * FROM users WHERE email=$1`, [
-      email,
-   ]);
+   const user = await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
 
-   const matchPassword = await bcrypt.compare(
-      password,
-      result.rows[0].password
-   );
+   if (!user) {
+      throw new Error("User not found!");
+   }
+
+   const matchPassword = await bcrypt.compare(password, user.rows[0].password);
 
    if (!matchPassword) {
       throw new Error("Invalid Credentials!");
    }
 
-   return result;
+   const jwtPayload = {
+      id: user.rows[0].id,
+      name: user.rows[0].name,
+      email: user.rows[0].email,
+   };
+
+   const token = jwt.sign(jwtPayload, `${process.env.JWT_SECRET}`, {
+      expiresIn: "15d",
+   });
+
+   delete user.rows[0].password;
+
+   return { token, user: user.rows[0] };
 };
 
 export const authServices = {
