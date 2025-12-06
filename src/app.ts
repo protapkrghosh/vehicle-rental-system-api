@@ -17,4 +17,13 @@ app.use("/api/v1/users", userRoutes); // User CRUD
 app.use("/api/v1/auth", authRoutes); // Auth Routes
 app.use("/api/v1/vehicles", vehicleRoutes); // Vehicle Routes
 
+// Find not found route
+app.use((req: Request, res: Response) => {
+   res.status(404).json({
+      success: false,
+      message: "Route not found",
+      path: req.path,
+   });
+});
+
 export default app;
