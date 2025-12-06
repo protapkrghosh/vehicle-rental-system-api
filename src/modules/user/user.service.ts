@@ -1,9 +1,6 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../config/database";
 
-// TODO Delete this createUsers
-
-
 const getUsers = async () => {
    const result = await pool.query(`SELECT * FROM users`);
    result.rows.map((user) => delete user.password);

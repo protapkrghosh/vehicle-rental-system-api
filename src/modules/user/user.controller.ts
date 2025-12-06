@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { userServices } from "./user.service";
 
-// TODO Delete this createUsers
-
-
 const getUsers = async (req: Request, res: Response) => {
    try {
       const result = await userServices.getUsers();
