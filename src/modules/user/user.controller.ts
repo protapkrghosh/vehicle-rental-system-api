@@ -2,24 +2,7 @@ import { Request, Response } from "express";
 import { userServices } from "./user.service";
 
 // TODO Delete this createUsers
-const createUsers = async (req: Request, res: Response) => {
-   try {
-      const result = await userServices.createUsers(req.body);
-      // console.log(result.rows[0]);
 
-      res.status(201).json({
-         success: true,
-         message: "User Inserted Successfully",
-         data: result.rows[0],
-      });
-   } catch (error: any) {
-      res.status(500).json({
-         success: false,
-         message: error.message,
-         errors: error,
-      });
-   }
-};
 
 const getUsers = async (req: Request, res: Response) => {
    try {
@@ -86,7 +69,6 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 export const userControllers = {
-   createUsers,
    getUsers,
    updateUser,
    deleteUser,
