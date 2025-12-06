@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { pool } from "../config/database";
 import config from "../config";
 
-const signUpUser = async (payload: Record<string, unknown>) => {
+const registerUser = async (payload: Record<string, unknown>) => {
    const { name, email, password, phone, role } = payload;
 
    const hashPassword = await bcrypt.hash(password as string, 10);
@@ -17,7 +17,7 @@ const signUpUser = async (payload: Record<string, unknown>) => {
    return result;
 };
 
-const signInUser = async (email: string, password: string) => {
+const loginUser = async (email: string, password: string) => {
    const user = await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
 
    if (!user) {
@@ -47,6 +47,6 @@ const signInUser = async (email: string, password: string) => {
 };
 
 export const authServices = {
-   signUpUser,
-   signInUser,
+   registerUser,
+   loginUser,
 };
