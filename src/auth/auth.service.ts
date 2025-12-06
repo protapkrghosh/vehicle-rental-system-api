@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../config/database";
 
-const registerUser = async (payload: Record<string, unknown>) => {
+const signUpUser = async (payload: Record<string, unknown>) => {
    const { name, email, password, phone, role } = payload;
 
    const hashPassword = await bcrypt.hash(password as string, 10);
@@ -15,6 +15,13 @@ const registerUser = async (payload: Record<string, unknown>) => {
    return result;
 };
 
+const signInUser = async (email: string, password: string) => {
+   const result = await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
+
+   return result;
+};
+
 export const authServices = {
-   registerUser,
+   signUpUser,
+   signInUser,
 };
