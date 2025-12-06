@@ -1,18 +1,29 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 
-const auth = () => {
+const auth = (...roles: string[]) => {
    return async (req: Request, res: Response, next: NextFunction) => {
       try {
          const token = req.headers.authorization;
 
          if (!token) {
-            return res.status(401).json({ message: "You are not authorized!" });
+            return res
+               .status(401)
+               .json({ message: "Invalid authentication token" });
          }
 
-         const decode = jwt.verify(token, config.jwtSecret as string);
-         console.log({ token, decode });
+         const decoded = jwt.verify(
+            token,
+            config.jwtSecret as string
+         ) as JwtPayload;
+         req.user = decoded;
+
+         if (roles.length && !roles.includes(decoded.role)) {
+            return res.status(403).json({
+               error: "Unauthorized!!",
+            });
+         }
 
          next();
       } catch (error: any) {
