@@ -24,14 +24,28 @@ const getUsers = async () => {
 };
 
 const updateUser = async (payload: Record<string, unknown>, id: string) => {
-   const { name, email, password, phone, role } = payload;
-   const hashPassword = await bcrypt.hash(password as string, 10);
+   let { name, email, password, phone, role } = payload;
+   const currentUser = await pool.query(`SELECT role FROM users WHERE id=$1`, [
+      id,
+   ]);
+
+   const currentRole = currentUser.rows[0].role;
+   if (currentRole === "customer") {
+      role = "customer";
+   } else {
+      role = role || currentRole;
+   }
+
+   const hashPassword = await bcrypt.hash(String(password), 10);
 
    const result = await pool.query(
-      `UPDATE users SET name=$1, email=$2, password=$3, phone=$4, role=$5 WHERE id=$6 RETURNING *`,
+      `UPDATE users 
+       SET name=$1, email=$2, password=$3, phone=$4, role=$5 
+       WHERE id=$6 RETURNING *`,
       [name, email, hashPassword, phone, role, id]
    );
-   result.rows.map((user) => delete user.password);
+
+   delete result.rows[0].password;
 
    return result;
 };
