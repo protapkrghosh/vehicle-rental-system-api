@@ -10,7 +10,7 @@ app.use(express.json());
 initDB();
 
 app.get("/", (req: Request, res: Response) => {
-   res.send("Vehicle Rental System...");
+   res.send("Vehicle Rental System Running...");
 });
 
 app.use("/api/v1/users", userRoutes); // User CRUD
