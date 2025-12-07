@@ -1,6 +1,14 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../config/database";
 
+interface userPayload {
+   name: string;
+   email: string;
+   password: string;
+   phone: string;
+   role: string;
+}
+
 const getUsers = async () => {
    const result = await pool.query(`SELECT * FROM users`);
    result.rows.map((user) => delete user.password);
@@ -8,7 +16,7 @@ const getUsers = async () => {
    return result;
 };
 
-const updateUser = async (payload: Record<string, unknown>, id: string) => {
+const updateUser = async (payload: userPayload, id: string) => {
    let { name, email, password, phone, role } = payload;
    const currentUser = await pool.query(`SELECT role FROM users WHERE id=$1`, [
       id,

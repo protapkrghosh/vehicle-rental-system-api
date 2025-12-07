@@ -1,6 +1,14 @@
 import { pool } from "../../config/database";
 
-const createVehicle = async (payload: Record<string, unknown>) => {
+interface vehiclePayload {
+   vehicle_name: string;
+   type: string;
+   registration_number: string;
+   daily_rent_price: number;
+   availability_status: string;
+}
+
+const createVehicle = async (payload: vehiclePayload) => {
    const {
       vehicle_name,
       type,
@@ -34,7 +42,7 @@ const getSingleVehicle = async (id: string) => {
    return result;
 };
 
-const updateVehicle = async (payload: Record<string, unknown>, id: string) => {
+const updateVehicle = async (payload: vehiclePayload, id: string) => {
    const {
       vehicle_name,
       type,
@@ -54,12 +62,12 @@ const updateVehicle = async (payload: Record<string, unknown>, id: string) => {
          id,
       ]
    );
-   
+
    return result;
 };
 
 const deleteVehicle = async (id: string) => {
-   const result = await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id])
+   const result = await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id]);
    return result;
 };
 
