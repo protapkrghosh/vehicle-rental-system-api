@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../config/database";
 
-interface userPayload {
+interface UserPayload {
    name: string;
    email: string;
    password: string;
@@ -16,7 +16,7 @@ const getUsers = async () => {
    return result;
 };
 
-const updateUser = async (payload: userPayload, id: string) => {
+const updateUser = async (payload: UserPayload, id: string) => {
    let { name, email, password, phone, role } = payload;
    const currentUser = await pool.query(`SELECT role FROM users WHERE id=$1`, [
       id,

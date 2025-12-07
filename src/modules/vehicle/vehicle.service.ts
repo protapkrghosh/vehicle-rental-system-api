@@ -1,6 +1,6 @@
 import { pool } from "../../config/database";
 
-interface vehiclePayload {
+interface VehiclePayload {
    vehicle_name: string;
    type: string;
    registration_number: string;
@@ -8,7 +8,7 @@ interface vehiclePayload {
    availability_status: string;
 }
 
-const createVehicle = async (payload: vehiclePayload) => {
+const createVehicle = async (payload: VehiclePayload) => {
    const {
       vehicle_name,
       type,
@@ -42,7 +42,7 @@ const getSingleVehicle = async (id: string) => {
    return result;
 };
 
-const updateVehicle = async (payload: vehiclePayload, id: string) => {
+const updateVehicle = async (payload: VehiclePayload, id: string) => {
    const {
       vehicle_name,
       type,
