@@ -196,17 +196,10 @@ const updateBooking = async (
 
    const updatedBooking = updateResult.rows[0];
 
-   await pool.query("UPDATE vehicles SET availability_status=$1 WHERE id=$2", [
-      "available",
-      booking.vehicle_id,
-   ]);
-
-   const checkVehicle = await pool.query(
-      "SELECT availability_status FROM vehicles WHERE id=$1",
-      [booking.vehicle_id]
+   await pool.query(
+      "UPDATE vehicles SET availability_status=$1 WHERE id=$2",
+      ["available", booking.vehicle_id]
    );
-
-   const vehicle = checkVehicle.rows[0];
 
    let message = "";
    if (status === "cancelled") {
@@ -215,7 +208,7 @@ const updateBooking = async (
       message = "Booking marked as returned. Vehicle is now available";
    }
 
-   const data = {
+   let data: any = {
       id: updatedBooking.id,
       customer_id: updatedBooking.customer_id,
       vehicle_id: updatedBooking.vehicle_id,
@@ -223,14 +216,23 @@ const updateBooking = async (
       rent_end_date: updatedBooking.rent_end_date,
       total_price: updatedBooking.total_price,
       status: updatedBooking.status,
-      vehicle: {
-         availability_status: vehicle.availability_status,
-      },
    };
 
-   const result = { message, data };
-   return result;
-};
+   if (status === "returned") {
+      const checkVehicle = await pool.query(
+         "SELECT availability_status FROM vehicles WHERE id = $1",
+         [booking.vehicle_id]
+      );
+
+      const vehicle = checkVehicle.rows[0];
+
+      data.vehicle = {
+         availability_status: vehicle.availability_status,
+      };
+   }
+
+   return { message, data };
+}
 
 export const bookingServices = {
    createBooking,
