@@ -125,4 +125,4 @@ GET    /api/v1/bookings              - View bookings (role-based)
 PUT    /api/v1/bookings/:bookingId   - Update booking status (role-based)
 ```
 
-**Made with ❤️ by Protap Ghosh**
+**Made with ❤️ by [Protap Ghosh](https://github.com/protapkrghosh)**
