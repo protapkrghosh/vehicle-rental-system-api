@@ -13,11 +13,35 @@ const createBooking = async (req: Request, res: Response) => {
    } catch (error: any) {
       res.status(400).json({
          success: false,
-         message: error.message || "Failed to create booking",
+         message: error.message,
+      });
+   }
+};
+
+const getAllBookings = async (req: Request, res: Response) => {
+   try {
+      const user = req.user as any;
+      const result = await bookingServices.getAllBookings(user);
+
+      const message =
+         user.role === "admin"
+            ? "Bookings retrieved successfully"
+            : "Your bookings retrieved successfully";
+
+      res.status(200).json({
+         success: true,
+         message,
+         data: result.rows,
+      });
+   } catch (error: any) {
+      res.status(500).json({
+         success: false,
+         message: error.message,
       });
    }
 };
 
 export const bookingControllers = {
    createBooking,
+   getAllBookings,
 };

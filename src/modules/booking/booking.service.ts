@@ -7,6 +7,11 @@ interface BookingPayload {
    rent_end_date: string;
 }
 
+interface UserPayload {
+   id: number;
+   role: string;
+}
+
 const createBooking = async (payload: BookingPayload) => {
    const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
@@ -46,9 +51,7 @@ const createBooking = async (payload: BookingPayload) => {
       throw new Error("End date must be after start date");
    }
 
-   const days = Math.ceil(
-      (endDate - startDate) / (1000 * 60 * 60 * 24)
-   );
+   const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
 
    const total_price = vehicle.daily_rent_price * days;
 
@@ -88,6 +91,63 @@ const createBooking = async (payload: BookingPayload) => {
    return result;
 };
 
+const getAllBookings = async (user: UserPayload) => {
+   const { id, role } = user;
+
+   let query = "";
+   let params: any[] = [];
+
+   if (role === "admin") {
+      query = `
+         SELECT 
+            bookings.id,
+            bookings.customer_id,
+            bookings.vehicle_id,
+            bookings.rent_start_date,
+            bookings.rent_end_date,
+            bookings.total_price,
+            bookings.status,
+            json_build_object(
+               'name', customer.name,
+               'email', customer.email
+            ) as customer,
+
+            json_build_object(
+               'vehicle_name', vehicle.vehicle_name,
+               'registration_number', vehicle.registration_number
+            ) as vehicle
+
+         FROM bookings
+         JOIN users customer ON bookings.customer_id = customer.id
+         JOIN vehicles vehicle ON bookings.vehicle_id = vehicle.id
+      `;
+   } else {
+      query = `
+         SELECT 
+            bookings.id,
+            bookings.vehicle_id,
+            bookings.rent_start_date,
+            bookings.rent_end_date,
+            bookings.total_price,
+            bookings.status,
+            json_build_object(
+               'vehicle_name', vehicle.vehicle_name,
+               'registration_number', vehicle.registration_number,
+               'type', vehicle.type
+            ) as vehicle
+
+         FROM bookings
+         JOIN vehicles vehicle ON bookings.vehicle_id = vehicle.id
+         WHERE bookings.customer_id = $1
+      `;
+      params = [id];
+   }
+
+   const result = await pool.query(query, params);
+   return result;
+};
+
 export const bookingServices = {
    createBooking,
+   getAllBookings,
 };
