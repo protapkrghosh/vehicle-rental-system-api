@@ -76,7 +76,7 @@ npm install
 ### Step 3: Environment Variables
 ```
 PORT=5000
-JWT_SECRET="b6861d9f4dfe4658adafc8046f7df952fh531e4b0411373c86858d1ed78504e3"
+JWT_SECRET="your-jwt-secret-key"
 CONNECTION_STR=postgresql://username:password@localhost:5432/vehicle_rental_system
 ```
 
